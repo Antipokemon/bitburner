@@ -10,7 +10,6 @@ export async function main(ns) {
 	var hackScriptRam = ns.getScriptRam('hack.js');
 	var maxThreads;
 	var maxServerRam;
-
 	// scp to owned servers
 	for (var i = 0; i < servers.length; i++){
 		await ns.scp('weaken.js', 'home', servers[i]);
@@ -18,14 +17,12 @@ export async function main(ns) {
 		await ns.scp('hack.js', 'home', servers[i]);
 		await ns.scp('nuke.js', 'home', servers[i]);
 	}
-
 	// scp to targets
 	for (var i = 0; i < targets.length; i++) {
 		await ns.scp('weaken.js', 'home', targets[i]);
 		await ns.scp('grow.js', 'home', targets[i]);
 		await ns.scp('nuke.js', 'home', targets[i]);
 	}
-
 	// Check if target is nukeable
 	for (var i = 0; i < targets.length; i++) {
 		// If nukeable, run nuke.js
@@ -35,7 +32,6 @@ export async function main(ns) {
 			}
 		}
 	}
-
 	// Run on owned servers
 	for (var i = 0; i < servers.length; i++) {
 				
@@ -52,13 +48,12 @@ export async function main(ns) {
 				// Weaken
 				ns.exec('weaken.js', servers[i], threads, targets[j]);
 				// Hack
-				ns.exec('hack.js', servers[i], 1, targets[j]);
+				ns.exec('hack.js', servers[i], threads, targets[j]);
 			} else {
 				ns.trpint('No root access on ' + targets[j]);
 			}
 		}
 	}
-
 	//Run on target servers
 	for (var i = 0; i < targets.length; i++) {
 		if (ns.hasRootAccess(targets[i])) {
@@ -72,5 +67,4 @@ export async function main(ns) {
 			}
 		}
 	}
-	// backdoor
 }
