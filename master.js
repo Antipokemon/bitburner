@@ -3,7 +3,7 @@ export async function main(ns) {
 	// Variables
 	var targets = ['n00dles', 'foodnstuff', 'sigma-cosmetics', 'joesguns', 'nectar-net', 'hong-fang-tea', 'harakiri-sushi', 'neo-net', 'zer0', 'max-hardware', 'iron-gym', 'phantasy',
 	 'silver-helix', 'omega-net', 'avmnite-02h', 'crush-fitness', 'johnson-ortho', 'the-hub'];
-	var threads = 3;
+	var threads = 1;
 	var servers = ns.getPurchasedServers();
 	var growScriptRAM = ns.getScriptRam('grow.js');
 	var weakenScriptRam = ns.getScriptRam('weaken.js');
