@@ -1,8 +1,7 @@
 /** @param {NS} ns **/
 export async function main(ns) {
 	// Variables
-	var targets = ['n00dles', 'foodnstuff', 'sigma-cosmetics', 'joesguns', 'nectar-net', 'hong-fang-tea', 'harakiri-sushi', 'neo-net', 'zer0', 'max-hardware', 'iron-gym', 'phantasy',
-	 'silver-helix', 'omega-net', 'avmnite-02h', 'crush-fitness', 'johnson-ortho', 'the-hub'];
+	var targets = ['home'];
 	var threads = 1;
 	var servers = ns.getPurchasedServers();
 	var growScriptRAM = ns.getScriptRam('grow.js');
@@ -10,6 +9,29 @@ export async function main(ns) {
 	var hackScriptRam = ns.getScriptRam('hack.js');
 	var maxThreads;
 	var maxServerRam;
+	
+	// scan for all servers
+	for (var i = 0; i < targets.length; i++) {
+		var currentScan = ns.scan(targets[i]);
+		for (var j = 0; j < currentScan.length; j++) {
+			if (targets.indexOf(currentScan[j]) === -1) {
+				targets.push(currentScan[j]);
+			}
+		}
+	}
+	// remove purchase servers from targets
+	for (var i = 0; i < servers.length; i++) {
+		if (targets.indexOf(servers[i] != -1)) {
+			targets.splice(targets.indexOf(servers[i]), 1);
+		}
+	}
+	targets.splice(targets.indexOf('home'), 1);
+	// remove targets with high level
+	for (var i = 0; i < targets.length; i++) {
+		if (ns.getHackingLevel() < ns.getServerRequiredHackingLevel(targets[i]) || ns.getServerMaxMoney(targets[i]) === 0) {
+			targets.splice(targets.indexOf(targets[i]), 1);
+		}
+	}
 	// scp to owned servers
 	for (var i = 0; i < servers.length; i++){
 		await ns.scp('weaken.js', 'home', servers[i]);
@@ -34,7 +56,7 @@ export async function main(ns) {
 	}
 	// Run on owned servers
 	for (var i = 0; i < servers.length; i++) {
-				
+
 		ns.killall(servers[i]);
 		
 		for (var j = 0; j < targets.length; j++) {
@@ -49,9 +71,7 @@ export async function main(ns) {
 				ns.exec('weaken.js', servers[i], threads, targets[j]);
 				// Hack
 				ns.exec('hack.js', servers[i], threads, targets[j]);
-			} else {
-				ns.trpint('No root access on ' + targets[j]);
-			}
+			} 
 		}
 	}
 	//Run on target servers
