@@ -6,7 +6,7 @@ export async function main(ns) {
 	var servers = ns.getPurchasedServers();
 	var growScriptRAM = ns.getScriptRam('grow.js');
 	var weakenScriptRam = ns.getScriptRam('weaken.js');
-	var hackScriptRam = ns.getScriptRam('hack.js');
+	// var hackScriptRam = ns.getScriptRam('hack.js');
 	var maxThreads;
 	var maxServerRam;
 	
@@ -30,6 +30,7 @@ export async function main(ns) {
 	for (var i = 0; i < targets.length; i++) {
 		if (ns.getHackingLevel() < ns.getServerRequiredHackingLevel(targets[i]) || ns.getServerMaxMoney(targets[i]) === 0) {
 			targets.splice(targets.indexOf(targets[i]), 1);
+			i--;
 		}
 	}
 	// scp to owned servers
@@ -56,21 +57,21 @@ export async function main(ns) {
 	}
 	// Run on owned servers
 	for (var i = 0; i < servers.length; i++) {
-
+		// Get Purchased Server Max RAM
+		maxServerRam = ns.getServerMaxRam(servers[i]);
+		maxThreads = Math.floor((maxServerRam / (growScriptRAM + weakenScriptRam)));
+		threads = Math.floor(maxThreads/targets.length);
+		ns.tprint('server: ', servers[i], ' RAM: ', maxServerRam, ' maxThreads: ', maxThreads, ' threads: ', threads, ' targets: ', targets.length);
 		ns.killall(servers[i]);
 		
 		for (var j = 0; j < targets.length; j++) {
 			if (ns.hasRootAccess(targets[j])) {
-				// Get Purchased Server Max RAM
-				maxServerRam = ns.getServerMaxRam(servers[i]);
-				maxThreads = Math.floor((maxServerRam / (growScriptRAM + weakenScriptRam + hackScriptRam)));
-				threads = Math.floor(maxThreads/targets.length);
 				// Grow
 				ns.exec('grow.js', servers[i], threads, targets[j]);
 				// Weaken
 				ns.exec('weaken.js', servers[i], threads, targets[j]);
 				// Hack
-				ns.exec('hack.js', servers[i], threads, targets[j]);
+				ns.exec('hack.js', 'home', 1, targets[j]);
 			} 
 		}
 	}
